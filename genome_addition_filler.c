@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 /*
 
 This C script will act as supplementary documentation for the process of the
@@ -42,18 +43,55 @@ I will leave inline notes within each to explain why things are happening.
 void genome_addition_iteration(int* genotype, int zeroes, int inds, 
                                int* zero_ind, int curr_zero, 
                                int* replacement, int curr_ind, int verbose);
-void workhorse();
+void workhorse(void);
 void fill_genotype_model(char* alleles, char* model, int zeroes, int inds, 
                                int curr_model_index, int curr_allele_index, 
                                int verbose);
-void test_DNA();
+void test_DNA(int ploidy);
+void printswitch(int ploidy);
+long factorial(int n);
+long multiset(int n, int k);
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	test_DNA();
+	int i;
+	int ploidy;
+	if (argc > 1)
+	{
+		int scanstat = sscanf(argv[1], "%d", &ploidy);
+		if (scanstat != 1)
+		{
+			printf("Error:\n");
+			printf("%s is not an integer. Exiting program.\n", argv[1]);
+			return 0;
+		} 
+	} 
+	else
+	{
+		ploidy = 3;
+	}
+	test_DNA(ploidy);
 	return 0;
 }
 
+
+long factorial(int n)
+{
+  int c;
+  long result = 1;
+ 
+  for (c = 1; c <= n; c++)
+    result = result * c;
+ 
+  return result;
+}
+
+long multiset(int n, int k)
+{
+	long numerator = factorial(n + k - 1);
+	long denominator = factorial(k)*factorial(n - 1);
+	return numerator/denominator;
+}
 
 /*
 Inputs: 
@@ -129,7 +167,7 @@ void genome_addition_iteration(int* genotype, int zeroes, int inds,
 	return;
 }
 
-void workhorse()
+void workhorse(void)
 {
 	int i;
 	int j;
@@ -172,15 +210,20 @@ void workhorse()
 }
 
 
-void test_DNA()
+void test_DNA(int ploidy)
 {
 	int i;
 	int j;
-	int ploidy = 3;
+	long combinations = multiset(4, ploidy);
+	// int ploidy = 3;
 	char *alleles = "ACGT";
 	char *model;
 	model = malloc(ploidy * sizeof(char));
-	printf("\nCREATING TRIPLOID GENOTYPE MODEL\n===============\n");
+	printf("\nCREATING ");
+	printswitch(ploidy);
+	printf(" GENOTYPE MODEL\n");
+	printf("%lu POSSIBLE COMBINATIONS\n", combinations);
+	printf("===============\n");
 	for (i = 0; i < 4; i++)
 	{
 		fill_genotype_model(alleles, model, ploidy, 4, 0, i, 0);			
@@ -257,6 +300,55 @@ void fill_genotype_model(char* alleles, char* model, int zeroes, int inds,
 
 	return;
 }
+
+
+void printswitch(int ploidy)
+{
+	switch(ploidy)
+	{
+		case 1 :
+			printf("HAPLOID");
+			break;
+		case 2 :
+			printf("DIPLOID");
+			break;
+		case 3 :
+			printf("TRIPLOID");
+			break;
+		case 4 :
+			printf("TETRAPLOID");
+			break;
+		case 5 :
+			printf("PENTAPLOID");
+			break;
+		case 6 :
+			printf("HEXAPLOID");
+			break;
+		case 7 :
+			printf("SEPTAPLOID");
+			break;
+		case 8 :
+			printf("OCTAPLOID");
+			break;
+		case 9 :
+			printf("NONAPLOID");
+			break;
+		case 10 :
+			printf("DECAPLOID");
+			break;
+		case 11 :
+			printf("HENDECAPLOID");
+			break;
+		case 12 :
+			printf("DODECAPLOID");
+			break;
+		default :
+			printf("???PLOID");
+			break;
+	}
+}
+
+
 
 
 
