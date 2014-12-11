@@ -43,7 +43,9 @@ void genome_addition_iteration(int* genotype, int zeroes, int inds,
                                int* zero_ind, int curr_zero, 
                                int* replacement, int curr_ind, int verbose);
 void workhorse();
-
+void fill_genotype_model(int* allelels, int* model, int zeroes, int inds, 
+                               int curr_model_index, int curr_allele_index, 
+                               int verbose)
 int main(void)
 {
 	workhorse();
@@ -52,7 +54,8 @@ int main(void)
 
 
 /*
-Inputs: genotype a one dimensional array. (in practice, it's a distance matrix).
+Inputs: 
+		genotype a one dimensional array. (in practice, it's a distance matrix).
 		zeroes the number of missing alleles (k)
 		inds   the number of potential replacements (n)
 		zero_ind an array giving the indices for each missing allele
@@ -166,6 +169,78 @@ void workhorse()
 	return;
 }
 
+
+/*
+Inputs: 
+		alleles a one dimensional array containing unique alleles to be donated.
+		model a one dimensional array of an initially empty genotype to be filled.
+		zeroes the number of missing alleles (k)
+		inds   the number of potential replacements (n)
+		curr_model_index an index for model
+		curr_allele_index an index for replacement
+		verbose indicator for status
+*/
+void fill_genotype_model(int* allelels, int* model, int zeroes, int inds, 
+                               int curr_model_index, int curr_allele_index, 
+                               int verbose)
+{
+
+	// I call this the DEBUGGERNAUT
+	if (verbose)
+	{
+		printf("STATUS-------------------\n");
+		printf("ZEROES & INDS: %d\t%d\n", zeroes, inds);
+		printf("CURRENT MODEL POSITION:\t%d\n", curr_model_index);
+		printf("CURRENT ALLELE POSITION:\t%d\n", curr_allele_index);
+	}
+	
+	model[curr_model_index] = alleles[curr_allele_index];
+
+	int i;
+	int j;
+
+	// Second step: Loop through all observed alleles BEGINNING WITH THE 
+	// OBSERVED ALLELE entering the function.
+	for (i = curr_allele_index; i < inds; i++)
+	{
+		// If you haven't filled the model, call the function again.
+		if (curr_model_index < zeroes - 1)
+		{
+			// note the increment in the curr_model_index and i instead of
+			// curr_allele_index.
+			genome_addition_iteration(alleles, model, zeroes, inds,
+									  ++curr_model_index, i, verbose);
+
+			// BASE CASE: imputed model.
+			if (curr_model_index == zeroes - 1)
+			{
+				return;
+			}
+		}
+		else // BASE CASE: imputed model.
+		{
+			// CALCULATION....
+			printf("GENOTYPE MODEL:\t");
+			for (j = 0; j < zeroes; j++)
+			{
+				printf(" %d", model[j]);
+			}
+			printf("\n");
+
+			// BASE CASE: one zero or no more replacements.
+			if (zeroes == 1 || i == inds - 1)
+			{
+				return;
+			}			
+		}
+		// IMPORTANT: decrementing the zero index allows you to refill the 
+		// missing alleles with different replacements.
+		curr_model_index--;
+		if (verbose) printf("\t~~~\n");
+	}
+
+	return;
+}
 
 
 
