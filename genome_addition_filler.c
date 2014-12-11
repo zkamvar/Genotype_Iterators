@@ -43,12 +43,14 @@ void genome_addition_iteration(int* genotype, int zeroes, int inds,
                                int* zero_ind, int curr_zero, 
                                int* replacement, int curr_ind, int verbose);
 void workhorse();
-void fill_genotype_model(int* allelels, int* model, int zeroes, int inds, 
+void fill_genotype_model(char* alleles, char* model, int zeroes, int inds, 
                                int curr_model_index, int curr_allele_index, 
-                               int verbose)
+                               int verbose);
+void test_DNA();
+
 int main(void)
 {
-	workhorse();
+	test_DNA();
 	return 0;
 }
 
@@ -170,6 +172,23 @@ void workhorse()
 }
 
 
+void test_DNA()
+{
+	int i;
+	int j;
+	int ploidy = 5;
+	char *alleles = "ACGT";
+	char *model;
+	model = malloc(ploidy * sizeof(char));
+	for (i = 0; i < 4; i++)
+	{
+		fill_genotype_model(alleles, model, ploidy, 4, 0, i, 0);			
+	}
+
+	free(model);
+	return;
+}
+
 /*
 Inputs: 
 		alleles a one dimensional array containing unique alleles to be donated.
@@ -180,7 +199,7 @@ Inputs:
 		curr_allele_index an index for replacement
 		verbose indicator for status
 */
-void fill_genotype_model(int* allelels, int* model, int zeroes, int inds, 
+void fill_genotype_model(char* alleles, char* model, int zeroes, int inds, 
                                int curr_model_index, int curr_allele_index, 
                                int verbose)
 {
@@ -189,8 +208,8 @@ void fill_genotype_model(int* allelels, int* model, int zeroes, int inds,
 	if (verbose)
 	{
 		printf("STATUS-------------------\n");
-		printf("ZEROES & INDS: %d\t%d\n", zeroes, inds);
-		printf("CURRENT MODEL POSITION:\t%d\n", curr_model_index);
+		printf("ZEROES & INDS:\t%d\t%d\n", zeroes, inds);
+		printf("CURRENT MODEL POSITION:\t\t%d\n", curr_model_index);
 		printf("CURRENT ALLELE POSITION:\t%d\n", curr_allele_index);
 	}
 	
@@ -208,7 +227,7 @@ void fill_genotype_model(int* allelels, int* model, int zeroes, int inds,
 		{
 			// note the increment in the curr_model_index and i instead of
 			// curr_allele_index.
-			genome_addition_iteration(alleles, model, zeroes, inds,
+			fill_genotype_model(alleles, model, zeroes, inds,
 									  ++curr_model_index, i, verbose);
 
 			// BASE CASE: imputed model.
@@ -221,11 +240,8 @@ void fill_genotype_model(int* allelels, int* model, int zeroes, int inds,
 		{
 			// CALCULATION....
 			printf("GENOTYPE MODEL:\t");
-			for (j = 0; j < zeroes; j++)
-			{
-				printf(" %d", model[j]);
-			}
-			printf("\n");
+			puts(model);
+			// printf("\n");
 
 			// BASE CASE: one zero or no more replacements.
 			if (zeroes == 1 || i == inds - 1)
