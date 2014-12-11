@@ -180,11 +180,11 @@ void test_DNA()
 	char *alleles = "ACGT";
 	char *model;
 	model = malloc(ploidy * sizeof(char));
+	printf("\nCREATING PENTAPLOID GENOTYPE MODEL\n===============\n");
 	for (i = 0; i < 4; i++)
 	{
 		fill_genotype_model(alleles, model, ploidy, 4, 0, i, 0);			
 	}
-
 	free(model);
 	return;
 }
