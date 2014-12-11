@@ -44,10 +44,10 @@ void genome_addition_iteration(int* genotype, int zeroes, int inds,
                                int* zero_ind, int curr_zero, 
                                int* replacement, int curr_ind, int verbose);
 void workhorse(void);
-void fill_genotype_model(char* alleles, char* model, int zeroes, int inds, 
+void fill_genotype_model(char* alleles, char* model, int k, int n, 
                                int curr_model_index, int curr_allele_index, 
                                int verbose);
-void test_DNA(int ploidy);
+void test_DNA(int ploidy, int verbose);
 void printswitch(int ploidy);
 long factorial(int n);
 long multiset(int n, int k);
@@ -56,6 +56,8 @@ int main(int argc, char *argv[])
 {
 	int i;
 	int ploidy;
+	int verbose;
+	char vopt;
 	if (argc > 1)
 	{
 		int scanstat = sscanf(argv[1], "%d", &ploidy);
@@ -64,13 +66,31 @@ int main(int argc, char *argv[])
 			printf("Error:\n");
 			printf("%s is not an integer. Exiting program.\n", argv[1]);
 			return 0;
-		} 
+		}
+		if (argc > 2)
+		{
+			scanstat = sscanf(argv[2], "%c", &vopt);
+			if (scanstat != 1)
+			{
+				verbose = 0;
+			}
+			else
+			{
+				verbose = (vopt == 'v') ? 1 : 0;
+			}			
+		}
+		else
+		{
+			verbose = 0;
+		}
+
 	} 
 	else
 	{
 		ploidy = 3;
+		verbose = 0;
 	}
-	test_DNA(ploidy);
+	test_DNA(ploidy, verbose);
 	return 0;
 }
 
@@ -210,7 +230,7 @@ void workhorse(void)
 }
 
 
-void test_DNA(int ploidy)
+void test_DNA(int ploidy, int verbose)
 {
 	int i;
 	int j;
@@ -226,7 +246,7 @@ void test_DNA(int ploidy)
 	printf("===============\n");
 	for (i = 0; i < 4; i++)
 	{
-		fill_genotype_model(alleles, model, ploidy, 4, 0, i, 0);			
+		fill_genotype_model(alleles, model, ploidy, 4, 0, i, verbose);			
 	}
 	free(model);
 	return;
@@ -236,22 +256,22 @@ void test_DNA(int ploidy)
 Inputs: 
 		alleles a one dimensional array containing unique alleles to be donated.
 		model a one dimensional array of an initially empty genotype to be filled.
-		zeroes the number of missing alleles (k)
-		inds   the number of potential replacements (n)
+		k the ploidy (number of alleles necessary to fill model)
+		n the size of allele pool
 		curr_model_index an index for model
 		curr_allele_index an index for replacement
 		verbose indicator for status
 */
-void fill_genotype_model(char* alleles, char* model, int zeroes, int inds, 
-                               int curr_model_index, int curr_allele_index, 
-                               int verbose)
+void fill_genotype_model(char* alleles, char* model, int k, int n, 
+                         int curr_model_index, int curr_allele_index, 
+                         int verbose)
 {
 
 	// I call this the DEBUGGERNAUT
 	if (verbose)
 	{
 		printf("STATUS-------------------\n");
-		printf("ZEROES & INDS:\t%d\t%d\n", zeroes, inds);
+		printf("PLOIDY & NO. ALLELES:\t%d, %d\n", k, n);
 		printf("CURRENT MODEL POSITION:\t\t%d\n", curr_model_index);
 		printf("CURRENT ALLELE POSITION:\t%d\n", curr_allele_index);
 	}
@@ -263,18 +283,18 @@ void fill_genotype_model(char* alleles, char* model, int zeroes, int inds,
 
 	// Second step: Loop through all observed alleles BEGINNING WITH THE 
 	// OBSERVED ALLELE entering the function.
-	for (i = curr_allele_index; i < inds; i++)
+	for (i = curr_allele_index; i < n; i++)
 	{
 		// If you haven't filled the model, call the function again.
-		if (curr_model_index < zeroes - 1)
+		if (curr_model_index < k - 1)
 		{
 			// note the increment in the curr_model_index and i instead of
 			// curr_allele_index.
-			fill_genotype_model(alleles, model, zeroes, inds,
-									  ++curr_model_index, i, verbose);
+			fill_genotype_model(alleles, model, k, n, ++curr_model_index, i, 
+								verbose);
 
 			// BASE CASE: imputed model.
-			if (curr_model_index == zeroes - 1)
+			if (curr_model_index == k - 1)
 			{
 				return;
 			}
@@ -287,7 +307,7 @@ void fill_genotype_model(char* alleles, char* model, int zeroes, int inds,
 			// printf("\n");
 
 			// BASE CASE: one zero or no more replacements.
-			if (zeroes == 1 || i == inds - 1)
+			if (k == 1 || i == n - 1)
 			{
 				return;
 			}			
