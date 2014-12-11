@@ -1,0 +1,155 @@
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is a demonstration of Bruvo's distance comparing 4 diploid individuals 
+at a single locus. You can find the equations in Bruvo et al. 2004, but for the
+most part, the important thing to remember is that Bruvo's distance first does
+a pairwise comparison between individuals, and it creates a distance matrix from
+the square comparisons over all alleles. After that, it has to find the minimum
+average distance over all alleles meaning that it has to go through n!
+combinations to access each allele once (It will be demonstrated below). In
+terms of the distance matrix, this means that each time you choose a number for
+the average, the the row and column must be unique (like a diagonal through the
+matrix). Every time an average distance is taken, it is evaluated if it is the
+smallest distance observed. At the end of the permutations, the distance is
+added to the pairwise comparison array. 
+
+Note that for diploid individuals, there are far less operations needed.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+     GENOTYPE MATRIX:
+
+     A0   A1
+
+G0   69   65
+
+G1   68   73
+
+G2   63   67
+
+G3   67   74
+
+Geno1: 69 Geno2: 68 | 1-2^-1 = 0.500000
+Geno1: 65 Geno2: 68 | 1-2^-3 = 0.875000
+Geno1: 69 Geno2: 73 | 1-2^-4 = 0.937500
+Geno1: 65 Geno2: 73 | 1-2^-8 = 0.996094
+
+    DISTANCE MATRIX:
+
+       68        73
+
+69  0.500000  0.937500 
+
+65  0.875000  0.996094 
+
+dist[1][0] :  0.875000
+dist[0][1] :  0.937500
+AVG:  0.906250 MIN:  0.906250
+dist[0][0] :  0.500000
+dist[1][1] :  0.996094
+AVG:  0.748047 MIN:  0.748047
+Geno1: 69 Geno2: 63 | 1-2^-6 = 0.984375
+Geno1: 65 Geno2: 63 | 1-2^-2 = 0.750000
+Geno1: 69 Geno2: 67 | 1-2^-2 = 0.750000
+Geno1: 65 Geno2: 67 | 1-2^-2 = 0.750000
+
+    DISTANCE MATRIX:
+
+       63        67
+
+69  0.984375  0.750000 
+
+65  0.750000  0.750000 
+
+dist[1][0] :  0.750000
+dist[0][1] :  0.750000
+AVG:  0.750000 MIN:  0.750000
+dist[0][0] :  0.984375
+dist[1][1] :  0.750000
+AVG:  0.867188 MIN:  0.750000
+Geno1: 69 Geno2: 67 | 1-2^-2 = 0.750000
+Geno1: 65 Geno2: 67 | 1-2^-2 = 0.750000
+Geno1: 69 Geno2: 74 | 1-2^-5 = 0.968750
+Geno1: 65 Geno2: 74 | 1-2^-9 = 0.998047
+
+    DISTANCE MATRIX:
+
+       67        74
+
+69  0.750000  0.968750 
+
+65  0.750000  0.998047 
+
+dist[1][0] :  0.750000
+dist[0][1] :  0.968750
+AVG:  0.859375 MIN:  0.859375
+dist[0][0] :  0.750000
+dist[1][1] :  0.998047
+AVG:  0.874023 MIN:  0.859375
+Geno1: 68 Geno2: 63 | 1-2^-5 = 0.968750
+Geno1: 73 Geno2: 63 | 1-2^-10 = 0.999023
+Geno1: 68 Geno2: 67 | 1-2^-1 = 0.500000
+Geno1: 73 Geno2: 67 | 1-2^-6 = 0.984375
+
+    DISTANCE MATRIX:
+
+       63        67
+
+68  0.968750  0.500000 
+
+73  0.999023  0.984375 
+
+dist[1][0] :  0.999023
+dist[0][1] :  0.500000
+AVG:  0.749512 MIN:  0.749512
+dist[0][0] :  0.968750
+dist[1][1] :  0.984375
+AVG:  0.976562 MIN:  0.749512
+Geno1: 68 Geno2: 67 | 1-2^-1 = 0.500000
+Geno1: 73 Geno2: 67 | 1-2^-6 = 0.984375
+Geno1: 68 Geno2: 74 | 1-2^-6 = 0.984375
+Geno1: 73 Geno2: 74 | 1-2^-1 = 0.500000
+
+    DISTANCE MATRIX:
+
+       67        74
+
+68  0.500000  0.984375 
+
+73  0.984375  0.500000 
+
+dist[1][0] :  0.984375
+dist[0][1] :  0.984375
+AVG:  0.984375 MIN:  0.984375
+dist[0][0] :  0.500000
+dist[1][1] :  0.500000
+AVG:  0.500000 MIN:  0.500000
+Geno1: 63 Geno2: 67 | 1-2^-4 = 0.937500
+Geno1: 67 Geno2: 67 | 1-2^-0 = 0.000000
+Geno1: 63 Geno2: 74 | 1-2^-11 = 0.999512
+Geno1: 67 Geno2: 74 | 1-2^-7 = 0.992188
+
+    DISTANCE MATRIX:
+
+       67        74
+
+63  0.937500  0.999512 
+
+67  0.000000  0.992188 
+
+dist[1][0] :  0.000000
+dist[0][1] :  0.999512
+AVG:  0.499756 MIN:  0.499756
+dist[0][0] :  0.937500
+dist[1][1] :  0.992188
+AVG:  0.964844 MIN:  0.499756
+
+BRUVO'S DISTANCES FOR EACH PAIRWISE COMPARISON:
+
+G0 to G1:  0.748047
+G0 to G2:  0.750000
+G0 to G3:  0.859375
+G1 to G2:  0.749512
+G1 to G3:  0.500000
+G2 to G3:  0.499756
+
+Number of Permutations: 4
+
