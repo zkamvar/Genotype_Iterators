@@ -176,11 +176,11 @@ void test_DNA()
 {
 	int i;
 	int j;
-	int ploidy = 5;
+	int ploidy = 3;
 	char *alleles = "ACGT";
 	char *model;
 	model = malloc(ploidy * sizeof(char));
-	printf("\nCREATING PENTAPLOID GENOTYPE MODEL\n===============\n");
+	printf("\nCREATING TRIPLOID GENOTYPE MODEL\n===============\n");
 	for (i = 0; i < 4; i++)
 	{
 		fill_genotype_model(alleles, model, ploidy, 4, 0, i, 0);			
