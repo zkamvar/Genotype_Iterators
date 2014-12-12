@@ -238,7 +238,8 @@ void test_DNA(int ploidy, int verbose)
 	// int ploidy = 3;
 	char *alleles = "ACGT";
 	char *model;
-	model = malloc(ploidy * sizeof(char));
+	model = malloc((ploidy + 1) * sizeof(char));
+	model[ploidy] = '\0';
 	printf("\nCREATING ");
 	printswitch(ploidy);
 	printf(" GENOTYPE MODEL\n");
@@ -363,7 +364,7 @@ void printswitch(int ploidy)
 			printf("DODECAPLOID");
 			break;
 		default :
-			printf("???PLOID");
+			printf("%d-PLOID", ploidy);
 			break;
 	}
 }
